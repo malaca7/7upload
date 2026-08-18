@@ -3,6 +3,12 @@ import fs from "fs";
 import path from "path";
 import { getUploadDir } from "@/lib/upload";
 
+export const dynamic = "force-static";
+
+export function generateStaticParams() {
+  return [{ filename: "placeholder.png" }];
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ filename: string }> }

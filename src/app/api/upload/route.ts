@@ -7,6 +7,7 @@ import { generateRandomFilename, getSiteUrl, getUploadDir } from "@/lib/upload";
 import { getMaxSizeInBytes, isValidMimeType, isValidExtension } from "@/lib/validation";
 
 export const runtime = "nodejs";
+export const dynamic = "force-static";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +20,6 @@ export async function POST(req: NextRequest) {
     }
 
     const uploadDir = getUploadDir();
-    // Ensure upload directory exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         },
         limits: {
           fileSize: getMaxSizeInBytes(),
-          files: 1, // Only 1 file per request
+          files: 1,
         },
       });
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
         const writeStream = fs.createWriteStream(savePath);
 
-        const writePromise = new Promise<void>((res, rej) => {
+        const writePromise = new Promise<void>((res) => {
           writeStream.on("finish", () => {
             if (!hasError) {
               fileSaved = true;
@@ -96,7 +96,6 @@ export async function POST(req: NextRequest) {
       });
 
       bb.on("finish", async () => {
-        // Wait for all disk writes to complete before evaluating result
         await Promise.all(filePromises);
 
         if (hasError) {
